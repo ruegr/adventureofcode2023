@@ -33,6 +33,7 @@ const getCalibValue = (line) => {
 
     for (const [numWord, num] of Object.entries(numericWords)) {
         line = line.replaceAll(numWord,num);
+        // ToDo: This replacement is not the correct solution. ie: twone will become tw1
     }
     
     const firstDigit = getFirstDigit(line);
