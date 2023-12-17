@@ -31,7 +31,8 @@ const getCalibValue = (line) => {
     return [firstDigit,lastDigit].join`` * 1;
 };
 
-
-input.split`\n`.forEach((el) => console.log(el, getCalibValue(el)));
+if (TEST) {
+    input.split`\n`.forEach((el) => console.log(el, getCalibValue(el)));
+}
 
 console.log(input.split`\n`.reduce((pre, cur) => pre = pre + getCalibValue(cur), 0));
