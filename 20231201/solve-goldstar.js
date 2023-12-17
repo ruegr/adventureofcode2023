@@ -1,7 +1,7 @@
 "use strict";
 const fs = require('node:fs');
 
-const TEST = true;
+const TEST = false;
 let input = '';
 
 if (TEST) {
@@ -32,8 +32,8 @@ const getCalibValue = (line) => {
     const numericWords = {one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9};
 
     for (const [numWord, num] of Object.entries(numericWords)) {
-        line = line.replaceAll(numWord,num);
-        // ToDo: This replacement is not the correct solution. ie: twone will become tw1
+        line = line.replaceAll(numWord, numWord.slice(0,1) + num + numWord.slice(1));
+        // Mitigation of Problem <"twone" -> "tw1">
     }
     
     const firstDigit = getFirstDigit(line);
