@@ -1,7 +1,8 @@
 "use strict";
 const fs = require('node:fs');
 
-const TEST = true;
+const TEST = false;
+const DEBUG = true;
 let input = '';
 
 if (TEST) {
@@ -18,22 +19,33 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green`;
         return;
     }
 }
-const isNumeric = (c) => c >= '0' && c <= '9';
 
-const getFirstDigit = (str) => {
-    for (const c of str) {
-        if (isNumeric(c)) return c;
+const isGameValid = (gameLine, redCubes=12, greenCubes=13, blueCubes=14) => {
+    const cubes = {red:redCubes, green:greenCubes, blue:blueCubes};
+
+    let [id, reveals] = gameLine.split`:`;
+    id = id.split` `[1];
+
+    for (const reveal of reveals.split`;`) {
+        for (const countCol of reveal.split`,`) {
+            const [count, col] = countCol.trim` `.split` `;
+            cubes[col] -= count*1;
+        }
     }
-}
 
-const getCalibValue = (line) => {
-    const firstDigit = getFirstDigit(line);
-    const lastDigit = getFirstDigit(line.split``.reverse().join``);
-    return [firstDigit,lastDigit].join`` * 1;
+    const valid = Object.values(cubes).reduce((res, val) => res && (val >= 0), true);
+    if(DEBUG) console.log(gameLine);
+    if(DEBUG) console.log("Game", id, valid, cubes);
+
+    return {id:id, valid:valid, idIfValid:valid ? id*1 : 0, cubes:cubes, gameLine:gameLine};
 };
 
-if (TEST) {
-    input.split`\n`.forEach((el) => console.log(el, getCalibValue(el)));
+
+if (DEBUG*0) {
+    input.split`\n`.forEach((gameLine) => console.log(isGameValid(gameLine)));
 }
 
-console.log(input.split`\n`.reduce((pre, cur) => pre = pre + getCalibValue(cur), 0));
+const result=input.split`\n`.reduce((idSum, val) => idSum + isGameValid(val)['idIfValid'], 0);
+
+console.log({ids:input.split`\n`.reduce((idSum, val) => idSum + ' ' + isGameValid(val)['idIfValid'], '')})
+console.log({result:result});
