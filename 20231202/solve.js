@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 
 const TEST = false;
-const DEBUG = true;
+const DEBUG = false;
 let input = '';
 
 if (TEST) {
@@ -21,19 +21,24 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green`;
 }
 
 const isGameValid = (gameLine, redCubes=12, greenCubes=13, blueCubes=14) => {
-    const cubes = {red:redCubes, green:greenCubes, blue:blueCubes};
-
+    const cubes = {red:0, green:0, blue:0};
     let [id, reveals] = gameLine.split`:`;
+    let valid = true;
     id = id.split` `[1];
 
     for (const reveal of reveals.split`;`) {
+        cubes['red'] = redCubes;
+        cubes['green'] = greenCubes;
+        cubes['blue'] = blueCubes;
+
         for (const countCol of reveal.split`,`) {
             const [count, col] = countCol.trim` `.split` `;
             cubes[col] -= count*1;
         }
+        valid = valid && cubes['red']>=0 && cubes['green']>=0 && cubes['blue']>=0;
     }
 
-    const valid = Object.values(cubes).reduce((res, val) => res && (val >= 0), true);
+    //valid = Object.values(cubes).reduce((res, val) => res && (val >= 0), true);
     if(DEBUG) console.log(gameLine);
     if(DEBUG) console.log("Game", id, valid, cubes);
 
@@ -47,5 +52,5 @@ if (DEBUG*0) {
 
 const result=input.split`\n`.reduce((idSum, val) => idSum + isGameValid(val)['idIfValid'], 0);
 
-console.log({ids:input.split`\n`.reduce((idSum, val) => idSum + ' ' + isGameValid(val)['idIfValid'], '')})
+if(DEBUG) console.log({ids:input.split`\n`.reduce((idSum, val) => idSum + ' ' + isGameValid(val)['idIfValid'], '')})
 console.log({result:result});
