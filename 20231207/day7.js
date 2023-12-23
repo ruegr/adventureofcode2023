@@ -29,8 +29,6 @@ class Hand {
         this.bid = bid * 1;
         this.cards = [];
         cards.split``.forEach((c) => this.cards.push(new Card(c)));
-        //this.cards.sort((a, b) => b.value - a.value);
-        //this.rank = [0,0,0,0,0,0]; //rank of: handtype, topcard, 2nd-topcard, [...], lowestcard. Later ranks may be 0 when hand consists of i.e. pairs
         [this.type, this.rank, this.cardRanks] = this.evaluate();
     }
     evaluate() {
@@ -52,8 +50,6 @@ class Hand {
             .map((c) => c.value);*/
 
         const [type, typeRank] = Hand.types[uniqueCount];
-        
-        //return [type, typeRank, cardRanks.concat(Array(5 - cardRanks.length).fill(0))];
         return [type, typeRank, this.cards.map(c => c.value)];
     }
     static types = {
