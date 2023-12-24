@@ -1,8 +1,8 @@
 "use strict";
 
-const DEBUG = true;
+const DEBUG = false;
 
-const input = ((TEST = true) => {
+const input = ((TEST = false) => {
     try {
         const fs = require('node:fs');
         return fs.readFileSync(TEST ? 'test-input.txt' : 'input.txt', 'utf8');
@@ -38,7 +38,7 @@ class Observatory {
         for (let colIx = this.galaxyMap[0].length - 1; colIx >= 0; colIx--) {
             if ([...new Set(this.galaxyMap.map(l => l[colIx]))].join`` == `.`) {
                 //console.log({colIx:colIx});
-                this.galaxyMap = this.galaxyMap.map(line => line.slice(0, colIx+1).concat(line.slice(colIx)));
+                this.galaxyMap = this.galaxyMap.map(line => line.slice(0, colIx + 1).concat(line.slice(colIx)));
             }
         }
 
@@ -55,18 +55,50 @@ class Observatory {
         const result = [];
         this.galaxyMap.forEach((line, yPos) => {
             line.forEach((char, xPos) => {
-                if (char==`#`) result.push([xPos, yPos]);
+                if (char == `#`) result.push([xPos, yPos]);
             })
         })
         return result;
+    }
+
+    calculateShortestDistance(pos1, pos2) {
+        const xWidth = Math.max(pos1[0], pos2[0]) - Math.min(pos1[0], pos2[0]);
+        const yWidth = Math.max(pos1[1], pos2[1]) - Math.min(pos1[1], pos2[1]);
+        return xWidth+yWidth;
+    }
+
+    getAllGalaxyDistances() {
+        const distances = {};
+        const galaxies = this.getGalaxyPositions();
+        const gCount = galaxies.length;
+        let pathLength = 0;
+
+        for (let i = 0; i < gCount; i++) {
+            for (let j = 0; j < gCount; j++) {
+                const distName = [i, j].sort().join`-`;
+                if ((i != j) && !(distName in distances)) {
+                    distances[distName] = this.calculateShortestDistance(galaxies[i], galaxies[j])
+                    pathLength += distances[distName];
+                    if(DEBUG)console.log(distName, `:`,distances[distName]);
+                };
+            }
+        }
+
+        console.log({ distCount: Object.keys(distances).length, totalLength:pathLength})
+
+        return distances;
     }
 }
 
 const observatory = new Observatory(input);
 
-observatory.drawMap(`initial State`);
+//observatory.drawMap(`initial State`);
 observatory.expandSpace();
-observatory.drawMap('expanded');
-console.log(observatory.getGalaxyPositions())
+//observatory.drawMap('expanded');
+observatory.getAllGalaxyDistances();
+
+/*for (const [key, value] of Object.entries(observatory.getAllGalaxyDistances())) {
+    console.log(`${key}: ${value}`);
+}*/
 
 if (DEBUG) debugger;
